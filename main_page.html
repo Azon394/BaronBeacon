@@ -1,5 +1,457 @@
 <!DOCTYPE html>
-<html>
-<head><title>Мой сайт</title></head>
-<body><h1>Привет, мир!</h1></body>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Особое приглашение 💌</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-1: #1a0b2e;
+    --bg-2: #2d1b4e;
+    --bg-3: #4a2c5a;
+    --accent: #ff6b9d;
+    --accent-2: #ffa8c5;
+    --text: #f5f0f7;
+    --text-dim: #c9b8d4;
+    --card-bg: rgba(255, 255, 255, 0.06);
+    --card-border: rgba(255, 255, 255, 0.12);
+  }
+
+  html, body {
+    height: 100%;
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  body {
+    background: radial-gradient(ellipse at top, var(--bg-3) 0%, var(--bg-2) 40%, var(--bg-1) 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+  }
+
+  /* Плавающие сердечки на фоне */
+  .hearts-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .heart-float {
+    position: absolute;
+    font-size: 20px;
+    opacity: 0.15;
+    animation: floatUp linear infinite;
+  }
+
+  @keyframes floatUp {
+    0%   { transform: translateY(100vh) scale(0.5) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.2; }
+    90%  { opacity: 0.2; }
+    100% { transform: translateY(-10vh) scale(1.2) rotate(360deg); opacity: 0; }
+  }
+
+  /* Контейнер карточки */
+  .card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 560px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 28px;
+    padding: 48px 40px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    text-align: center;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+                opacity 0.4s ease;
+  }
+
+  .card.hidden {
+    display: none;
+  }
+
+  .card.fade-out {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+
+  .card.fade-in {
+    animation: fadeIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .step-indicator {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent-2);
+    margin-bottom: 20px;
+    font-weight: 500;
+    opacity: 0.8;
+  }
+
+  .emoji-big {
+    font-size: 56px;
+    display: block;
+    margin-bottom: 20px;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.1); }
+  }
+
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(28px, 6vw, 38px);
+    font-weight: 600;
+    line-height: 1.25;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #fff 0%, var(--accent-2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  p.subtitle {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-dim);
+    margin-bottom: 32px;
+    font-weight: 300;
+  }
+
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  button {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 16px 24px;
+    border-radius: 16px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent) 0%, #d63384 100%);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(255, 107, 157, 0.35);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(255, 107, 157, 0.5);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text);
+    border: 1px solid var(--card-border);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.14);
+    transform: translateY(-2px);
+  }
+
+  /* Финальный экран */
+  .final-hearts {
+    font-size: 40px;
+    margin: 16px 0;
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+
+  .details {
+    background: rgba(255, 107, 157, 0.1);
+    border: 1px solid rgba(255, 107, 157, 0.25);
+    border-radius: 16px;
+    padding: 20px;
+    margin: 24px 0;
+    text-align: left;
+  }
+
+  .details .row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 15px;
+    color: var(--text-dim);
+  }
+
+  .details .row span:first-child {
+    font-size: 20px;
+  }
+
+  .details .row strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .reset-link {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 13px;
+    cursor: pointer;
+    margin-top: 20px;
+    text-decoration: underline;
+    text-decoration-color: rgba(201, 184, 212, 0.4);
+    text-underline-offset: 4px;
+    padding: 4px 8px;
+  }
+
+  .reset-link:hover {
+    color: var(--accent-2);
+  }
+
+  /* Прогресс-бар */
+  .progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 28px 28px 0 0;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    width: 0%;
+    transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-radius: 28px;
+  }
+
+  @media (max-width: 480px) {
+    .card { padding: 36px 24px; border-radius: 22px; }
+    .emoji-big { font-size: 44px; }
+    button { padding: 14px 20px; font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hearts-bg" id="heartsBg"></div>
+
+<main id="app">
+  <!-- Экраны будут генерироваться через JS -->
+</main>
+
+<script>
+/* ============================================================
+   СЦЕНАРИЙ ОПРОСА
+   Каждый экран — объект. Ключи экранов — id.
+   Финальный экран — final.
+   ============================================================ */
+const screens = {
+  start: {
+    emoji: "💌",
+    step: "Особое приглашение",
+    title: "Привет...",
+    subtitle: "У меня есть один очень важный вопрос.<br>Можно?",
+    options: [
+      { label: "Да, конечно 💫", next: "q1" }
+    ]
+  },
+
+  q1: {
+    emoji: "🍽️",
+    step: "Вопрос 1 из 3",
+    title: "Хочешь пойти со мной в ресторан?",
+    subtitle: "Тихий уютный вечер, вкусная еда и хорошая компания.",
+    options: [
+      { label: "Да, с удовольствием 🥰", next: "q2", variant: "primary" },
+      { label: "Может, что-то другое?", next: "q1b", variant: "secondary" }
+    ]
+  },
+
+  q1b: {
+    emoji: "🎨",
+    step: "Вопрос 1 из 3",
+    title: "А что тебе ближе?",
+    subtitle: "Выбери, что больше по душе.",
+    options: [
+      { label: "Прогулка и кофе ☕", next: "q2", variant: "primary" },
+      { label: "Кино и попкорн 🎬", next: "q2", variant: "primary" },
+      { label: "Просто ресторан 🍝", next: "q2", variant: "primary" }
+    ]
+  },
+
+  q2: {
+    emoji: "🌆",
+    step: "Вопрос 2 из 3",
+    title: "А какое время тебе удобнее?",
+    subtitle: "Выбери то, что подходит тебе больше всего.",
+    options: [
+      { label: "Вечер пятницы 🌙", next: "q3", variant: "primary" },
+      { label: "Выходной днём ☀️", next: "q3", variant: "primary" },
+      { label: "Субботний вечер ✨", next: "q3", variant: "primary" }
+    ]
+  },
+
+  q3: {
+    emoji: "💐",
+    step: "Последний вопрос",
+    title: "А цветы ты любишь?",
+    subtitle: "Просто хочу знать, чтобы всё было идеально.",
+    options: [
+      { label: "Обожаю 🌷", next: "final", variant: "primary" },
+      { label: "Не обязательно 🌿", next: "final", variant: "primary" },
+      { label: "Удиви меня 🌹", next: "final", variant: "primary" }
+    ]
+  },
+
+  final: {
+    emoji: "💖",
+    step: "Готово!",
+    title: "Это свидание!",
+    subtitle: "Спасибо, что согласилась. Я уже начал считать часы.",
+    final: true
+  }
+};
+
+/* ============================================================
+   ЛОГИКА
+   ============================================================ */
+const app = document.getElementById('app');
+let currentScreen = 'start';
+let history = [];
+
+function renderScreen(screenId, animate = true) {
+  const screen = screens[screenId];
+  if (!screen) return;
+
+  // Прогресс
+  const totalSteps = 4;
+  const stepMap = { start: 0, q1: 1, q1b: 1, q2: 2, q3: 3, final: 4 };
+  const progress = Math.min((stepMap[screenId] || 0) / totalSteps * 100, 100);
+
+  const card = document.createElement('div');
+  card.className = 'card' + (animate ? ' fade-in' : '');
+
+  let optionsHTML = '';
+  if (screen.options) {
+    optionsHTML = `<div class="buttons">` +
+      screen.options.map(opt =>
+        `<button class="btn-${opt.variant || 'primary'}" data-next="${opt.next}">${opt.label}</button>`
+      ).join('') +
+      `</div>`;
+  }
+
+  let finalHTML = '';
+  if (screen.final) {
+    finalHTML = `
+      <div class="final-hearts">💕 💖 💕</div>
+      <div class="details">
+        <div class="row"><span>📅</span><span>Когда: <strong>ближайшая пятница</strong></span></div>
+        <div class="row"><span>📍</span><span>Место: <strong>я выберу сам</strong></span></div>
+        <div class="row"><span>🎁</span><span>Сюрприз: <strong>гарантирован</strong></span></div>
+      </div>
+      <p class="subtitle" style="margin-bottom: 0;">Напиши мне, и мы всё обсудим 💌</p>
+    `;
+  }
+
+  card.innerHTML = `
+    <div class="progress"><div class="progress-bar" style="width: ${progress}%"></div></div>
+    <span class="step-indicator">${screen.step}</span>
+    <span class="emoji-big">${screen.emoji}</span>
+    <h1>${screen.title}</h1>
+    <p class="subtitle">${screen.subtitle}</p>
+    ${optionsHTML}
+    ${finalHTML}
+    ${screen.final ? '<button class="reset-link">Пройти заново</button>' : ''}
+  `;
+
+  // Убираем старую карточку
+  const oldCard = app.querySelector('.card');
+  if (oldCard) {
+    oldCard.classList.add('fade-out');
+    setTimeout(() => oldCard.remove(), 400);
+  }
+
+  setTimeout(() => app.appendChild(card), oldCard ? 200 : 0);
+
+  // Обработчики
+  card.querySelectorAll('button[data-next]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      history.push(currentScreen);
+      currentScreen = btn.dataset.next;
+      renderScreen(currentScreen);
+    });
+  });
+
+  const resetBtn = card.querySelector('.reset-link');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      history = [];
+      currentScreen = 'start';
+      renderScreen('start');
+    });
+  }
+}
+
+/* ============================================================
+   ФОНОВЫЕ СЕРДЕЧКИ
+   ============================================================ */
+(function createHearts() {
+  const container = document.getElementById('heartsBg');
+  const hearts = ['💗', '💕', '💖', '🌸', '✨', '💫', '🌹'];
+  const count = 14;
+
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    el.className = 'heart-float';
+    el.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+    el.style.left = Math.random() * 100 + '%';
+    el.style.fontSize = (14 + Math.random() * 24) + 'px';
+    el.style.animationDuration = (12 + Math.random() * 12) + 's';
+    el.style.animationDelay = (Math.random() * 15) + 's';
+    container.appendChild(el);
+  }
+})();
+
+/* ============================================================
+   СТАРТ
+   ============================================================ */
+renderScreen('start', false);
+</script>
+
+</body>
 </html>
