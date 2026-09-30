@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📡 Информация о просмотре</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-1: #0a0a14;
+    --bg-2: #12122a;
+    --bg-3: #1a1a3a;
+    --accent: #00e5ff;
+    --accent-2: #7c3aed;
+    --green: #00ff88;
+    --yellow: #ffd166;
+    --red: #ff5577;
+    --text: #e8e8f0;
+    --text-dim: #8a8a9e;
+    --card-bg: rgba(255, 255, 255, 0.04);
+    --card-border: rgba(255, 255, 255, 0.08);
+  }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    background: radial-gradient(ellipse at top, var(--bg-3) 0%, var(--bg-2) 40%, var(--bg-1) 100%);
+    background-attachment: fixed;
+    padding: 32px 20px 60px;
+  }
+
+  /* Фоновая сетка */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0, 229, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 229, 255, 0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+    mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  /* Заголовок */
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .header .badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding: 6px 14px;
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    border-radius: 100px;
+    background: rgba(0, 229, 255, 0.06);
+    margin-bottom: 20px;
+  }
+
+  .header h1 {
+    font-size: clamp(26px, 5vw, 36px);
+    font-weight: 600;
+    line-height: 1.2;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+
+  .header p {
+    color: var(--text-dim);
+    font-size: 14px;
+    font-weight: 300;
+  }
+
+  /* Живые часы */
+  .clock {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--green);
+    margin-top: 14px;
+    letter-spacing: 1px;
+  }
+
+  .clock::before {
+    content: '● ';
+    animation: blink 1.5s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.3; }
+  }
+
+  /* Секции */
+  .section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 22px 24px;
+    margin-bottom: 16px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: border-color 0.3s ease, transform 0.3s ease;
+  }
+
+  .section:hover {
+    border-color: rgba(0, 229, 255, 0.25);
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed rgba(0, 229, 255, 0.15);
+  }
+
+  .section-title .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  /* Строки данных */
+  .row {
+    display: grid;
+    grid-template-columns: 190px 1fr;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    align-items: baseline;
+  }
+
+  .row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .row .label {
+    font-size: 13px;
+    color: var(--text-dim);
+    font-weight: 400;
+  }
+
+  .row .value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    word-break: break-all;
+    line-height: 1.5;
+  }
+
+  .value.green  { color: var(--green); }
+  .value.yellow { color: var(--yellow); }
+  .value.red    { color: var(--red); }
+  .value.dim    { color: var(--text-dim); }
+
+  .value.big {
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .flag {
+    font-size: 16px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  /* Кнопка копировать */
+  .copy-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    padding: 3px 8px;
+    margin-left: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    vertical-align: middle;
+  }
+
+  .copy-btn:hover {
+    color: var(--accent);
+    border-color: rgba(0, 229, 255, 0.4);
+    background: rgba(0, 229, 255, 0.08);
+  }
+
+  .copy-btn.copied {
+    color: var(--green);
+    border-color: rgba(0, 255, 136, 0.4);
+    background: rgba(0, 255, 136, 0.08);
+  }
+
+  /* Бейджи для типа устройства */
+  .badge-type {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-type.mobile {
+    color: #ffd166;
+    background: rgba(255, 209, 102, 0.1);
+    border: 1px solid rgba(255, 209, 102, 0.3);
+  }
+
+  .badge-type.desktop {
+    color: #00ff88;
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+  }
+
+  .badge-type.tablet {
+    color: #7c3aed;
+    background: rgba(124, 58, 237, 0.12);
+    border: 1px solid rgba(124, 58, 237, 0.35);
+  }
+
+  /* Карта */
+  .map-wrap {
+    margin-top: 8px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--card-border);
+    aspect-ratio: 16 / 8;
+    position: relative;
+    background: #0a0a14;
+  }
+
+  .map-wrap iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+    filter: invert(0.92) hue-rotate(180deg) saturate(0.8) brightness(0.95);
+  }
+
+  .map-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    text-align: center;
+    padding: 20px;
+    line-height: 1.6;
+  }
+
+  /* Инфа внизу */
+  .footer {
+    text-align: center;
+    margin-top: 32px;
+    font-size: 12px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.5px;
+    line-height: 1.8;
+  }
+
+  .footer a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--accent);
+  }
+
+  .footer a:hover {
+    border-bottom-style: solid;
+  }
+
+  /* Загрузка */
+  .loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+
+  .loading .spinner {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    border: 2px solid rgba(0, 229, 255, 0.2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Адаптив */
+  @media (max-width: 560px) {
+    html, body { padding: 20px 14px 40px; }
+    .section { padding: 18px 16px; border-radius: 14px; }
+    .row {
+      grid-template-columns: 1fr;
+      gap: 4px;
+      padding: 10px 0;
+    }
+    .row .label { font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase; }
+    .row .value { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <span class="badge">📡 Live Info</span>
+    <h1>Информация о просмотре</h1>
+    <p>Данные о том, откуда, когда и как открыли эту страницу</p>
+    <div class="clock" id="clock">--:--:--</div>
+  </div>
+
+  <div id="content">
+    <div class="loading">
+      <div class="spinner"></div>
+      <div>Собираем данные...</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Все данные видны только здесь, в браузере.<br>
+    Никакие данные никуда не отправляются.
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   УТИЛИТЫ
+   ============================================================ */
+const $ = (id) => document.getElementById(id);
+
+function el(tag, className, html) {
+  const e = document.createElement(tag);
+  if (className) e.className = className;
+  if (html !== undefined) e.innerHTML = html;
+  return e;
+}
+
+function escapeHTML(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/* ============================================================
+   ЖИВЫЕ ЧАСЫ
+   ============================================================ */
+function startClock() {
+  const clock = $('clock');
+  const tick = () => {
+    const now = new Date();
+    const t = now.toLocaleTimeString('ru-RU', { hour12: false });
+    clock.textContent = t;
+  };
+  tick();
+  setInterval(tick, 1000);
+}
+
+/* ============================================================
+   ОПРЕДЕЛЕНИЕ ТИПА УСТРОЙСТВА
+   ============================================================ */
+function getDeviceType() {
+  const ua = navigator.userAgent;
+  if (/iPad|Tablet|PlayBook|Silk/i.test(ua) ||
+      (/Android/i.test(ua) && !/Mobile/i.test(ua))) {
+    return { type: 'Планшет', cls: 'tablet', icon: '📱' };
+  }
+  if (/Mobile|iPhone|iPod|Android|BlackBerry|Opera Mini|IEMobile/i.test(ua)) {
+    return { type: 'Смартфон', cls: 'mobile', icon: '📱' };
+  }
+  return { type: 'Компьютер', cls: 'desktop', icon: '💻' };
+}
+
+/* ============================================================
+   ОПРЕДЕЛЕНИЕ ОС
+   ============================================================ */
+function getOS() {
+  const ua = navigator.userAgent;
+  if (/Windows NT 10/i.test(ua))   return 'Windows 10/11';
+  if (/Windows NT/i.test(ua))      return 'Windows';
+  if (/Mac OS X/i.test(ua))        return 'macOS';
+  if (/Android/i.test(ua))         return 'Android';
+  if (/iPhone|iPad|iPod/i.test(ua))return 'iOS';
+  if (/Linux/i.test(ua))           return 'Linux';
+  return 'Неизвестно';
+}
+
+/* ============================================================
+   ОПРЕДЕЛЕНИЕ БРАУЗЕРА
+   ============================================================ */
+function getBrowser() {
+  const ua = navigator.userAgent;
+  if (/YaBrowser/i.test(ua))       return 'Yandex Browser';
+  if (/Edg\//i.test(ua))           return 'Microsoft Edge';
+  if (/OPR\//i.test(ua))           return 'Opera';
+  if (/Firefox\//i.test(ua))       return 'Firefox';
+  if (/Chrome\//i.test(ua))        return 'Chrome';
+  if (/Safari\//i.test(ua))        return 'Safari';
+  return 'Неизвестно';
+}
+
+/* ============================================================
+   ФЛАГИ СТРАН
+   ============================================================ */
+function countryFlag(code) {
+  if (!code || code.length !== 2) return '🌍';
+  const codePoints = code.toUpperCase().split('')
+    .map(c => 127397 + c.charCodeAt(0));
+  return String.fromCodePoint(...codePoints);
+}
+
+/* ============================================================
+   КНОПКА КОПИРОВАНИЯ
+   ============================================================ */
+function makeCopyBtn(text) {
+  const btn = document.createElement('button');
+  btn.className = 'copy-btn';
+  btn.textContent = 'copy';
+  btn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      btn.textContent = '✓ скопировано';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'copy';
+        btn.classList.remove('copied');
+      }, 1500);
+    } catch (e) {
+      btn.textContent = 'ошибка';
+      setTimeout(() => btn.textContent = 'copy', 1500);
+    }
+  });
+  return btn;
+}
+
+/* ============================================================
+   СОЗДАНИЕ СТРОКИ
+   ============================================================ */
+function makeRow(label, value, opts = {}) {
+  const row = el('div', 'row');
+
+  const lbl = el('div', 'label', escapeHTML(label));
+  row.appendChild(lbl);
+
+  const val = el('div', 'value' + (opts.cls ? ' ' + opts.cls : ''));
+
+  if (opts.html) {
+    val.innerHTML = opts.html;
+  } else {
+    val.textContent = value === null || value === undefined ? '—' : value;
+  }
+
+  if (opts.copy) {
+    val.appendChild(document.createTextNode(' '));
+    val.appendChild(makeCopyBtn(opts.copyValue || value));
+  }
+
+  row.appendChild(val);
+  return row;
+}
+
+/* ============================================================
+   СОЗДАНИЕ СЕКЦИИ
+   ============================================================ */
+function makeSection(title, rows) {
+  const sec = el('div', 'section');
+  const t = el('div', 'section-title',
+    `<span class="dot"></span>${escapeHTML(title)}`);
+  sec.appendChild(t);
+  rows.forEach(r => sec.appendChild(r));
+  return sec;
+}
+
+/* ============================================================
+   ОСНОВНАЯ ЛОГИКА
+   ============================================================ */
+async function buildContent() {
+  const content = $('content');
+  content.innerHTML = '';
+
+  /* -------- 1. ОБЩЕЕ -------- */
+  const now = new Date();
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '—';
+  const tzOffset = -now.getTimezoneOffset() / 60;
+  const tzOffsetStr = (tzOffset >= 0 ? '+' : '') + tzOffset;
+
+  content.appendChild(makeSection('⏱ Время и часовой пояс', [
+    makeRow('Сейчас', now.toLocaleString('ru-RU', { hour12: false }),
+      { cls: 'green big' }),
+    makeRow('UTC', now.toISOString().replace('T', ' ').slice(0, 19) + ' UTC',
+      { cls: 'dim' }),
+    makeRow('Часовой пояс', tz),
+    makeRow('Смещение UTC', tzOffsetStr + ' ч'),
+    makeRow('Unix timestamp', Math.floor(now.getTime() / 1000), { cls: 'dim' })
+  ]));
+
+  /* -------- 2. СТРАНИЦА -------- */
+  content.appendChild(makeSection('🔗 Страница и переход', [
+    makeRow('Полный URL', location.href, { copy: location.href }),
+    makeRow('Протокол', location.protocol.replace(':', '').toUpperCase()),
+    makeRow('Хост', location.hostname),
+    makeRow('Путь', location.pathname),
+    makeRow('Параметры (query)', location.search || '—',
+      { cls: location.search ? 'yellow' : 'dim', copy: location.search }),
+    makeRow('Якорь (hash)', location.hash || '—',
+      { cls: location.hash ? 'yellow' : 'dim' }),
+    makeRow('Откуда пришли (referrer)',
+      document.referrer || 'прямой заход / закладка',
+      {
+        cls: document.referrer ? 'yellow' : 'dim',
+        copy: document.referrer
+      })
+  ]));
+
+  /* -------- 3. УСТРОЙСТВО -------- */
+  const device = getDeviceType();
+  const uaData = navigator.userAgentData || {};
+  const platform = uaData.platform || getOS();
+
+  content.appendChild(makeSection('💻 Устройство и система', [
+    makeRow('Тип устройства',
+      null,
+      { html: `<span class="badge-type ${device.cls}">${device.icon} ${device.type}</span>` }),
+    makeRow('Операционная система', getOS()),
+    makeRow('Браузер', getBrowser()),
+    makeRow('Платформа', platform),
+    makeRow('Мобильное', /Mobi|Android|iPhone/i.test(navigator.userAgent) ? 'Да' : 'Нет'),
+    makeRow('Язык браузера', navigator.language || '—'),
+    makeRow('Все языки', (navigator.languages || []).join(', ') || '—',
+      { cls: 'dim' }),
+    makeRow('User-Agent', navigator.userAgent,
+      { cls: 'dim', copy: navigator.userAgent })
+  ]));
+
+  /* -------- 4. ЭКРАН -------- */
+  content.appendChild(makeSection('🖥 Экран и окно', [
+    makeRow('Разрешение экрана',
+      `${screen.width} × ${screen.height} px`),
+    makeRow('Размер окна',
+      `${window.innerWidth} × ${window.innerHeight} px`),
+    makeRow('Доступная область',
+      `${screen.availWidth} × ${screen.availHeight} px`),
+    makeRow('Плотность пикселей (DPR)',
+      window.devicePixelRatio ? window.devicePixelRatio.toFixed(2) + 'x' : '—'),
+    makeRow('Глубина цвета', screen.colorDepth + ' bit'),
+    makeRow('Ориентация',
+      screen.orientation ? screen.orientation.type : '—'),
+    makeRow('Тёмная тема',
+      window.matchMedia('(prefers-color-scheme: dark)').matches ? 'Да' : 'Нет'),
+    makeRow('Сенсорный ввод',
+      ('ontouchstart' in window) ? 'Да' : 'Нет')
+  ]));
+
+  /* -------- 5. ГЕОЛОКАЦИЯ (по IP через публичный API) -------- */
+  const geoSection = el('div', 'section');
+  geoSection.appendChild(el('div', 'section-title',
+    '<span class="dot"></span>🌍 Местоположение (по IP)'));
+  geoSection.appendChild(el('div', 'value dim',
+    'Запрашиваем данные...'));
+  content.appendChild(geoSection);
+
+  try {
+    const res = await fetch('https://ipapi.co/json/');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+
+    geoSection.innerHTML = '';
+    geoSection.appendChild(el('div', 'section-title',
+      '<span class="dot"></span>🌍 Местоположение (по IP)'));
+
+    const city = data.city || '—';
+    const region = data.region || '—';
+    const country = data.country_name || '—';
+    const countryCode = data.country_code || '';
+    const flag = countryFlag(countryCode);
+
+    geoSection.appendChild(makeRow('Страна',
+      `${flag} ${country}`,
+      { cls: 'green big' }));
+    geoSection.appendChild(makeRow('Регион', region));
+    geoSection.appendChild(makeRow('Город', city, { cls: 'yellow big' }));
+    geoSection.appendChild(makeRow('Почтовый индекс', data.postal || '—',
+      { cls: 'dim' }));
+    geoSection.appendChild(makeRow('Координаты',
+      data.latitude && data.longitude
+        ? `${data.latitude}, ${data.longitude}`
+        : '—',
+      { cls: 'dim' }));
+    geoSection.appendChild(makeRow('Провайдер (ISP)', data.org || '—'));
+    geoSection.appendChild(makeRow('Временная зона (IP)', data.timezone || '—'));
+
+    // IP-адрес
+    if (data.ip) {
+      geoSection.appendChild(makeRow('IP-адрес', data.ip,
+        { copy: data.ip }));
+    }
+    if (data.version) {
+      geoSection.appendChild(makeRow('Версия IP',
+        data.version === 'IPv4' ? 'IPv4' : 'IPv6', { cls: 'dim' }));
+    }
+
+    // Карта
+    if (data.latitude && data.longitude) {
+      const mapWrap = el('div', 'map-wrap');
+      const lat = data.latitude;
+      const lon = data.longitude;
+      // bbox вокруг точки ±0.15°
+      const bbox = `${lon - 0.15},${lat - 0.1},${lon + 0.15},${lat + 0.1}`;
+      const src = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`;
+      mapWrap.innerHTML =
+        `<iframe src="${src}" loading="lazy" title="Карта"></iframe>`;
+      geoSection.appendChild(mapWrap);
+    }
+  } catch (err) {
+    geoSection.innerHTML = '';
+    geoSection.appendChild(el('div', 'section-title',
+      '<span class="dot"></span>🌍 Местоположение (по IP)'));
+    geoSection.appendChild(el('div', 'value red',
+      'Не удалось получить данные о местоположении.<br>' +
+      '<span class="dim" style="font-size:12px;">' +
+      'Возможно, блокировщик или IP-сервис недоступен.</span>'));
+
+    // Резервная карта по часовому поясу
+    try {
+      const tz2 = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+      const city2 = tz2.split('/').pop().replace(/_/g, ' ');
+      if (city2 && city2 !== 'UTC') {
+        const mapWrap = el('div', 'map-wrap');
+        geoSection.appendChild(mapWrap);
+        // Пробуем через nominatim
+        fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' +
+              encodeURIComponent(city2))
+          .then(r => r.json())
+          .then(arr => {
+            if (arr && arr[0]) {
+              const lat = parseFloat(arr[0].lat);
+              const lon = parseFloat(arr[0].lon);
+              const bbox = `${lon - 0.15},${lat - 0.1},${lon + 0.15},${lat + 0.1}`;
+              const src = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`;
+              mapWrap.innerHTML =
+                `<iframe src="${src}" loading="lazy" title="Карта"></iframe>`;
+            }
+          })
+          .catch(() => {});
+      }
+    } catch (e) {}
+  }
+
+  /* -------- 6. СЕТЬ -------- */
+  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection || {};
+  content.appendChild(makeSection('📶 Сеть', [
+    makeRow('Онлайн', navigator.onLine ? 'Да' : 'Нет',
+      { cls: navigator.onLine ? 'green' : 'red' }),
+    makeRow('Тип соединения',
+      conn.effectiveType ? conn.effectiveType.toUpperCase() : '—'),
+    makeRow('Скорость (downlink)',
+      conn.downlink !== undefined ? conn.downlink + ' Мбит/с' : '—'),
+    makeRow('RTT (задержка)',
+      conn.rtt !== undefined ? conn.rtt + ' мс' : '—'),
+    makeRow('Экономия трафика',
+      conn.saveData ? 'Включена' : 'Выключена')
+  ]));
+
+  /* -------- 7. ХРАНИЛИЩЕ И КУКИ -------- */
+  content.appendChild(makeSection('🍪 Сессия, куки, хранилище', [
+    makeRow('Cookies включены', navigator.cookieEnabled ? 'Да' : 'Нет'),
+    makeRow('LocalStorage', typeof localStorage !== 'undefined'
+      ? 'Доступно (' + localStorage.length + ' записей)' : 'Нет'),
+    makeRow('SessionStorage', typeof sessionStorage !== 'undefined'
+      ? 'Доступно (' + sessionStorage.length + ' записей)' : 'Нет'),
+    makeRow('Инкогнито',
+      navigator.cookieEnabled && localStorage.length === 0 &&
+      sessionStorage.length === 0 ? 'Возможно' : 'Скорее нет'),
+    makeRow('История просмотров', history.length + ' записей')
+  ]));
+
+  /* -------- 8. ОТКУДА ПЕРЕШЛИ -------- */
+  let sourceInfo = 'Прямой заход (вручную или по закладке)';
+  let sourceIcon = '🔗';
+  const ref = document.referrer;
+  if (ref) {
+    try {
+      const refHost = new URL(ref).hostname.toLowerCase();
+      if (refHost.includes('github.io') || refHost.includes('github.com')) {
+        sourceInfo = 'Из GitHub';
+        sourceIcon = '🐙';
+      } else if (refHost.includes('t.me') || refHost.includes('telegram')) {
+        sourceInfo = 'Из Telegram';
+        sourceIcon = '✈️';
+      } else if (refHost.includes('whatsapp')) {
+        sourceInfo = 'Из WhatsApp';
+        sourceIcon = '💬';
+      } else if (refHost.includes('vk.com')) {
+        sourceInfo = 'Из ВКонтакте';
+        sourceIcon = '💙';
+      } else if (refHost.includes('instagram')) {
+        sourceInfo = 'Из Instagram';
+        sourceIcon = '📷';
+      } else if (refHost.includes('google')) {
+        sourceInfo = 'Из Google';
+        sourceIcon = '🔍';
+      } else if (refHost.includes('yandex')) {
+        sourceInfo = 'Из Яндекса';
+        sourceIcon = '🔍';
+      } else {
+        sourceInfo = 'Из ' + refHost;
+        sourceIcon = '🌐';
+      }
+    } catch (e) {
+      sourceInfo = 'Из ' + ref;
+    }
+  }
+
+  content.appendChild(makeSection('🚪 Откуда пришли', [
+    makeRow('Источник',
+      null,
+      { html: `<span class="value yellow big">${sourceIcon} ${escapeHTML(sourceInfo)}</span>` }),
+    makeRow('Полный referrer',
+      ref || '—',
+      { cls: 'dim', copy: ref })
+  ]));
+
+  /* -------- 9. JS / CSS -------- */
+  content.appendChild(makeSection('⚙️ Возможности браузера', [
+    makeRow('JavaScript', 'Включён', { cls: 'green' }),
+    makeRow('WebGL',
+      (() => {
+        try {
+          const c = document.createElement('canvas');
+          return (c.getContext('webgl') || c.getContext('experimental-webgl'))
+            ? 'Поддерживается' : 'Нет';
+        } catch (e) { return 'Нет'; }
+      })()),
+    makeRow('Сенсор (max touch)',
+      navigator.maxTouchPoints || 0),
+    makeRow('CPU ядер',
+      navigator.hardwareConcurrency || '—'),
+    makeRow('Память устройства',
+      navigator.deviceMemory ? navigator.deviceMemory + ' ГБ' : '—'),
+    makeRow('Do Not Track',
+      navigator.doNotTrack === '1' ? 'Включён' : 'Выключен'),
+    makeRow('Предпочтение движения',
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 'Уменьшено' : 'Обычное')
+  ]));
+}
+
+/* ============================================================
+   ЗАПУСК
+   ============================================================ */
+startClock();
+buildContent();
+</script>
+
+</body>
+</html>
