@@ -40,7 +40,6 @@
     position: relative;
   }
 
-  /* Плавающие элементы на фоне */
   .bg-elements {
     position: fixed;
     inset: 0;
@@ -62,12 +61,11 @@
     100% { transform: translateY(-10vh) scale(1.2) rotate(360deg); opacity: 0; }
   }
 
-  /* Контейнер карточки */
   .card {
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 580px;
+    max-width: 640px;
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 28px;
@@ -191,6 +189,128 @@
     animation: pulse 1.8s ease-in-out infinite;
   }
 
+  /* ============================================================
+     ГАЛЕРЕЯ ИЗ ТРЁХ ФОТО С ЭФФЕКТАМИ
+     ============================================================ */
+  .photo-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 28px 0 8px;
+    perspective: 1000px;
+  }
+
+  .photo-item {
+    position: relative;
+    border-radius: 18px;
+    padding: 6px;
+    background: linear-gradient(135deg,
+      rgba(255, 107, 157, 0.5) 0%,
+      rgba(255, 209, 102, 0.5) 100%);
+    box-shadow: 0 12px 30px rgba(255, 107, 157, 0.2);
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.4s ease;
+    animation: photoFloat 4s ease-in-out infinite;
+  }
+
+  .photo-item:nth-child(1) {
+    transform: rotate(-3deg);
+    animation-delay: 0s;
+  }
+
+  .photo-item:nth-child(2) {
+    transform: rotate(0deg) translateY(-6px);
+    animation-delay: 0.8s;
+    z-index: 2;
+  }
+
+  .photo-item:nth-child(3) {
+    transform: rotate(3deg);
+    animation-delay: 1.6s;
+  }
+
+  .photo-item:hover {
+    transform: rotate(0deg) translateY(-10px) scale(1.06) !important;
+    box-shadow: 0 20px 45px rgba(255, 107, 157, 0.45);
+    z-index: 5;
+  }
+
+  @keyframes photoFloat {
+    0%, 100% { translate: 0 0; }
+    50%      { translate: 0 -6px; }
+  }
+
+  /* Вращающееся сияние вокруг фото */
+  .photo-item::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 22px;
+    padding: 2px;
+    background: conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      rgba(255, 107, 157, 0.9) 90deg,
+      rgba(255, 209, 102, 0.9) 180deg,
+      rgba(255, 107, 157, 0.9) 270deg,
+      transparent 360deg
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    animation: rotateGlow 4s linear infinite;
+    opacity: 0.85;
+    pointer-events: none;
+  }
+
+  @keyframes rotateGlow {
+    to { transform: rotate(360deg); }
+  }
+
+  .photo-item img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  /* Плавающие сердечки вокруг галереи */
+  .photo-gallery {
+    position: relative;
+  }
+
+  .gallery-heart {
+    position: absolute;
+    font-size: 18px;
+    pointer-events: none;
+    animation: heartOrbit 6s ease-in-out infinite;
+    opacity: 0.9;
+    filter: drop-shadow(0 2px 6px rgba(255, 107, 157, 0.5));
+  }
+
+  @keyframes heartOrbit {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+    50%      { transform: translate(0, -14px) scale(1.25); opacity: 1; }
+  }
+
+  .photo-caption {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: var(--accent-2);
+    margin-top: 12px;
+    margin-bottom: 20px;
+    opacity: 0.9;
+  }
+  /* ============================================================
+     /ГАЛЕРЕЯ
+     ============================================================ */
+
   .letter {
     background: linear-gradient(135deg,
       rgba(255, 107, 157, 0.12) 0%,
@@ -256,7 +376,6 @@
 
   .reset-link:hover { color: var(--accent-2); }
 
-  /* Прогресс-бар */
   .progress {
     position: absolute;
     top: 0;
@@ -276,7 +395,6 @@
     border-radius: 28px;
   }
 
-  /* Конфетти */
   .confetti {
     position: fixed;
     top: -10px;
@@ -291,11 +409,20 @@
     100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
   }
 
-  @media (max-width: 480px) {
-    .card { padding: 36px 24px; border-radius: 22px; }
+  @media (max-width: 520px) {
+    .card { padding: 32px 20px; border-radius: 22px; }
     .emoji-big { font-size: 44px; }
     button { padding: 14px 20px; font-size: 15px; }
     .letter { padding: 22px 18px; font-size: 15px; }
+
+    .photo-gallery {
+      gap: 8px;
+      margin: 22px 0 6px;
+    }
+    .photo-item { padding: 4px; border-radius: 14px; }
+    .photo-item img { border-radius: 10px; }
+    .photo-item::before { inset: -4px; border-radius: 18px; }
+    .gallery-heart { font-size: 14px; }
   }
 </style>
 </head>
@@ -310,7 +437,6 @@
 <script>
 /* ============================================================
    СЦЕНАРИЙ ПОЗДРАВЛЕНИЯ
-   Вопросы про день рождения, знакомство и общие моменты.
    ============================================================ */
 const screens = {
   start: {
@@ -402,7 +528,6 @@ function renderScreen(screenId, animate = true) {
   const screen = screens[screenId];
   if (!screen) return;
 
-  // Прогресс
   const totalSteps = 5;
   const stepMap = { start: 0, q1: 1, q1b: 1, q2: 2, q3: 3, q4: 4, final: 5 };
   const progress = Math.min((stepMap[screenId] || 0) / totalSteps * 100, 100);
@@ -423,6 +548,31 @@ function renderScreen(screenId, animate = true) {
   if (screen.final) {
     finalHTML = `
       <div class="final-hearts">🎂 💖 🎈</div>
+
+      <!-- ==================== ГАЛЕРЕЯ ИЗ 3 ФОТО ====================
+           Чтобы заменить: положи рядом с index.html три файла:
+           photo1.jpg, photo2.jpg, photo3.jpg
+           Они автоматически появятся здесь.
+      =========================================================== -->
+      <div class="photo-gallery">
+        <span class="gallery-heart" style="top:-16px; left:6%;">💕</span>
+        <span class="gallery-heart" style="top:-22px; left:48%; animation-delay:1s;">💖</span>
+        <span class="gallery-heart" style="top:-14px; right:6%; animation-delay:2s;">💗</span>
+        <span class="gallery-heart" style="bottom:-18px; left:12%; animation-delay:0.5s;">🌸</span>
+        <span class="gallery-heart" style="bottom:-24px; right:14%; animation-delay:1.5s;">✨</span>
+
+        <div class="photo-item">
+          <img src="photo1.jpg" alt="Наше фото 1" onerror="this.closest('.photo-item').style.display='none'">
+        </div>
+        <div class="photo-item">
+          <img src="photo2.jpg" alt="Наше фото 2" onerror="this.closest('.photo-item').style.display='none'">
+        </div>
+        <div class="photo-item">
+          <img src="photo3.jpg" alt="Наше фото 3" onerror="this.closest('.photo-item').style.display='none'">
+        </div>
+      </div>
+      <p class="photo-caption">наши моменты ✨</p>
+      <!-- ==================== /ГАЛЕРЕЯ =================== -->
 
       <div class="letter">
         <p>Любимая,</p>
@@ -460,7 +610,6 @@ function renderScreen(screenId, animate = true) {
 
   setTimeout(() => app.appendChild(card), oldCard ? 200 : 0);
 
-  // Обработчики
   card.querySelectorAll('button[data-next]').forEach(btn => {
     btn.addEventListener('click', () => {
       currentScreen = btn.dataset.next;
@@ -476,7 +625,6 @@ function renderScreen(screenId, animate = true) {
     });
   }
 
-  // Конфетти на финальном экране
   if (screen.final) {
     setTimeout(launchConfetti, 600);
   }
