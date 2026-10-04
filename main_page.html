@@ -452,11 +452,11 @@ const screens = {
   q1: {
     emoji: "📅",
     step: "Вопрос 1 из 4",
-    title: "Помнишь день, когда мы познакомились?",
-    subtitle: "Иногда я прокручиваю его в голове. А ты?",
+    title: "Помнишь день, когда мы впервые познакомились?",
+    subtitle: "Подсказка, это связанно с сегодняшним днём)",
     options: [
-      { label: "Конечно помню! 💕", next: "q1b", variant: "primary" },
-      { label: "Смутно припоминаю 😅", next: "q1b", variant: "secondary" },
+      { label: "Конечно помню! Такое хуй забудешь 💕", next: "q1b", variant: "primary" },
+      { label: "Смутно припоминаю, я ж набухалася 😅 ", next: "q1b", variant: "secondary" },
       { label: "Напомни мне 😏", next: "q1b", variant: "secondary" }
     ]
   },
@@ -464,35 +464,34 @@ const screens = {
   q1b: {
     emoji: "✨",
     step: "Вопрос 1 из 4",
-    title: "А каким был тот день?",
-    subtitle: "Выбери, что больше всего запомнилось.",
+    title: "А что это был за день?",
     options: [
-      { label: "Волнение и бабочки 🦋", next: "q2", variant: "primary" },
-      { label: "Смех и лёгкость 😊", next: "q2", variant: "primary" },
-      { label: "Сразу понял(а) — это судьба 🌟", next: "q2", variant: "primary" }
+      { label: "Мой день рождения 🎁", next: "q2", variant: "primary" },
+      { label: "ВДХа 🥂", next: "q2", variant: "primary" },
+      { label: "На пакуре перед общагой 🌟", next: "q2", variant: "primary" }
     ]
   },
 
   q2: {
     emoji: "🎁",
     step: "Вопрос 2 из 4",
-    title: "Что для тебя важнее всего в этот день?",
-    subtitle: "Хочу, чтобы сегодня было именно так, как ты хочешь.",
+    title: "Чтобы ты хотела сегодня?",
+    subtitle: "Пусть всё будет так, как ты захочешь",
     options: [
-      { label: "Тёплые слова и внимание 💌", next: "q3", variant: "primary" },
-      { label: "Сюрпризы и подарки 🎀", next: "q3", variant: "primary" },
-      { label: "Провести день вместе 🥰", next: "q3", variant: "primary" }
+      { label: "ЛИГАЛАЙЗ ГС 💌", next: "q3", variant: "primary" },
+      { label: "В Крым 😭", next: "q3", variant: "primary" },
+      { label: "Тебя и сижку 🥰", next: "q3", variant: "primary" }
     ]
   },
 
   q3: {
     emoji: "🌟",
     step: "Вопрос 3 из 4",
-    title: "А помнишь наш самый счастливый момент?",
-    subtitle: "У меня он перед глазами прямо сейчас.",
+    title: "Какой наш самый счастливый момент?",
+    subtitle: "Я это ты, а ты это и никого не надо нам",
     options: [
-      { label: "Наша первая прогулка 🌙", next: "q4", variant: "primary" },
-      { label: "Первый совместный рассвет ☀️", next: "q4", variant: "primary" },
+      { label: "Наш первый поцелую 💋", next: "q4", variant: "primary" },
+      { label: "Наша первая совместная ночь под 'ИЩИМИНЯНАЛУНЕ' 🌙", next: "q4", variant: "primary" },
       { label: "Какой-то другой — он в моём сердце 💖", next: "q4", variant: "primary" }
     ]
   },
@@ -505,7 +504,7 @@ const screens = {
     options: [
       { label: "Чтобы мы были вместе всегда 🌹", next: "final", variant: "primary" },
       { label: "Чтобы ты улыбалась каждый день 😊", next: "final", variant: "primary" },
-      { label: "Узнать твоё желание 💭", next: "final", variant: "primary" }
+      { label: "Чтобы мы с тобой ебланили где-то в Европе ВМЕСТЕ 🤗", next: "final", variant: "primary" }
     ]
   },
 
